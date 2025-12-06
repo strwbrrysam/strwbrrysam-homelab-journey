@@ -11,8 +11,8 @@ That first build opened the door to a new world of:
 - cabling  
 - troubleshooting fundamentals  
 
-Not long after, I bought a small 2-bay Synology NAS — my gateway into storage and networking.
-
+Not long after, I bought a small 2-bay Synology NAS — my gateway into storage and networking.  
+I hooked it up to the router and accessed it from my PC using Wi-Fi.  
 This is when I learned that:
 
 - Wi-Fi is not magic  
@@ -24,17 +24,6 @@ It was the first time I realised that **the network is just as important as the 
 
 ---
 
-## 🌐 Discovering Networking & Storage
+## 👉 To Continue Reading
 
-My curiosity started with a simple desire:  
-**I wanted to access my Synology NAS from outside the house.**
-
-A tech from a local computer shop came over and showed me how to **port-forward**.
-
-This resulted in… yes… **port-forwarding Samba to the internet**.
-
-Terrible idea — but I didn’t know at the time. I was just blown away that it worked.
-
-But it was slow.
-
-And that frustration sparked something in me.
+➡️ **[02 – Discovering Networking & Storage](02-discovering-networking.md)**
