@@ -18,17 +18,19 @@ To understand the full story, begin with the high-level summary:
 ---
 
 ## 📚 Full Chapter Index
+
 Each chapter covers a different phase of my development:
 
 - **[01 – Early Years: My First PC & Synology](docs/01-early-years.md)**
-- **[02 – Game Server Era: My Gateway to Linux](docs/02-game-server-era.md)**
-- **[03 – Router Firmware & Home Networking](docs/03-router-firmware.md)**
-- **[04 – Cabling, CCTV, and Physical Infrastructure](docs/04-cabling-and-cctv.md)**
-- **[05 – Multi-Site VPNs](docs/05-multi-site-vpn.md)**
-- **[06 – Dynamic Routing with BIRD & OSPF](docs/06-dynamic-routing.md)**
-- **[07 – Self-Hosting Services (Nextcloud, LAMP/LEMP)](docs/07-self-hosting.md)**
-- **[08 – Learning to Vibe Code & Use AI](docs/08-ai-and-vibecoding.md)**
-- **[09 – What’s Next](docs/09-whats-next.md)**
+- **[02 – Discovering Networking & Storage](docs/02-discovering-networking.md)**
+- **[03 – Game Server Era: My Gateway to Linux](docs/03-game-server-era.md)**
+- **[04 – Router Firmware & Home Networking](docs/04-router-firmware.md)**
+- **[05 – Cabling, CCTV, and Physical Infrastructure](docs/05-cabling-and-cctv.md)**
+- **[06 – Multi-Site VPNs](docs/06-multi-site-vpn.md)**
+- **[07 – Dynamic Routing with BIRD & OSPF](docs/07-dynamic-routing.md)**
+- **[08 – Self-Hosting Services (Nextcloud, LAMP/LEMP)](docs/08-self-hosting.md)**
+- **[09 – Learning to Vibe Code & Use AI](docs/09-ai-and-vibecoding.md)**
+- **[10 – What’s Next](docs/10-whats-next.md)**
 
 ---
 
