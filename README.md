@@ -34,54 +34,60 @@ Each chapter covers a different phase of my development:
 
 ---
 
-## 🗂️ Technical Documentation & Project Notes
-In addition to the story, I maintain deeper technical breakdowns here:
+## 🗂️ Technical Documentation & Projects
 
-➡️ **[`/projects/`](projects/)**  
-Contains personal notes, configs, experiments, and evolving designs for:
+All hands-on technical work — configs, experiments, topology ideas, and detailed breakdowns —  
+lives inside the **`/projects/`** directory.
 
-- WireGuard mesh + routing  
+➡️ **[`/projects/`](projects/)**
+
+Each project is self-contained and may include:
+
+- `images/` — screenshots, hardware photos, wiring diagrams  
+- `diagrams/` — network topologies and architecture visuals  
+- `configs/` — example configuration files  
+- `notes/` — experiments, troubleshooting, design iterations  
+
+Current projects include:
+
+- WireGuard mesh + dynamic routing  
 - Nextcloud setup  
 - ZFS storage architecture  
-- ACL & permissions  
-- Homelab services  
+- ACL & permissions model  
+- Homelab services and automation  
 
-These are *not* polished guides — they are my internal thinking, iterations, 
-and experiment logs.
-
-If I later produce clean beginner-friendly instructions, those will live in separate repos.
-
----
-
-## 🖼️ Images & Diagrams
-Visual references are stored here:
-
-- **[`/images/`](images/)** — photos of hardware, cabling, racks, NAS builds  
-- **[`/diagrams/`](diagrams/)** — WireGuard topologies, BIRD routing diagrams, etc.
+These folders represent my **engineering notebook** — exploratory, iterative, and constantly improving.  
+Polished, beginner-friendly guides may eventually become separate public repositories.
 
 ---
 
 ## 🧭 How to Navigate This Repo
 
-This repo contains two types of content:
+This repository has two main parts:
 
-### **1. My Personal Learning Journey (in `/docs/`)**
-A chronological story documenting:
-- how I got into Linux & networking  
-- the mistakes I made  
-- why I chose specific solutions  
-- what I learned at each stage  
+### **1. `/docs/` — My Personal Learning Journey**
+A chronological story that explains:
 
-### **2. Technical Notes & Deep Dives (in `/projects/`)**
-These folders contain:
-- configs  
-- troubleshooting notes  
+- how I got into Linux, networking, and infrastructure  
+- the mistakes and breakthroughs along the way  
+- why I built things the way I did  
+- how my homelab evolved over time  
+
+This is the narrative side of the repo.
+
+---
+
+### **2. `/projects/` — Technical Deep Dives**
+Each project contains:
+
 - architecture drafts  
-- experimental designs  
-- implementation details of real systems I run  
+- experiments and implementation details  
+- configuration files  
+- troubleshooting notes  
+- diagrams and images specific to that project  
 
-Think of **/docs** as the narrative  
-And **/projects** as the engineering notebook.
+Think of **`/docs`** as *the story of my growth*,  
+and **`/projects`** as *the technical evidence of that growth*.
 
 ---
 
