@@ -119,6 +119,19 @@ ip route replace 10.255.6.0/30 via 10.188.30.10
 
 ---
 
+## BUT THE KEEN EYED AMONG YOU WILL REALIZE...
+you can just do a summary route!
+
+```bash
+# on all the routers...
+# Forward all WireGuard transit subnets to CORE-UK1
+ip route replace 10.255.0.0/16 via 10.188.X.10
+```
+
+---
+
+---
+
 ## Summary Table
 
 | Site | Edge Router | CORE Server | Required Routes |
