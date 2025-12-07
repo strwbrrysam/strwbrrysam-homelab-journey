@@ -1,0 +1,72 @@
+# CORE-UK1 — BIRD OSPF config (what this actually does for my mesh)
+# FOR A CLEANER VERSION WITH LESS COMMENTS SEE etc-bird-bird.conf.example
+
+log syslog all;          # Send ALL BIRD logs to syslog on CORE-UK1
+                         # so I can see OSPF/WireGuard routing events with `journalctl` or syslog tools.
+
+router id 10.188.30.10;  # Use CORE-UK1's 10.188.30.10 address as the OSPF Router ID.
+                         # This MUST be unique across my whole 10.188.x.x network (HK1 / HK2 / UK1 / USA).
+
+protocol device { }      # Let BIRD watch Linux interfaces.
+                         # Needed so OSPF can see my WireGuard tunnel interfaces (a1, s1, s2, s3) coming and going.
+
+protocol kernel {
+    ipv4 {
+        export all;      # Push all BIRD-learned IPv4 routes into the Linux kernel routing table.
+                         # In practice this means:
+                         # - OSPF routes learned over the WG mesh become usable for normal system traffic.
+    };
+    persist;             # Keep routes in the kernel even if BIRD temporarily stops,
+                         # so my routing table doesn’t instantly vanish if BIRD restarts.
+}
+
+protocol static {
+    ipv4;                # Static routing protocol is enabled but I’m not actually defining
+                         # any static routes here. Everything is meant to be learned via OSPF
+                         # plus the directly attached stubnets below.
+}
+
+protocol ospf v2 {
+    ipv4 {
+        # Control which routes BIRD is allowed to *advertise back out* into OSPF.
+        # Here I only re-advertise routes that already came from OSPF.
+        # This prevents me from accidentally redistributing kernel/static/connected routes
+        # and keeps the OSPF domain “clean”.
+        export filter {
+            if source = RTS_OSPF then accept;
+            reject;
+        };
+    };
+
+    area 0.0.0.0 {       # Put CORE-UK1 into the backbone area (Area 0).
+                         # All my sites (HK1 / HK2 / UK1 / USA) are in the same backbone area.
+
+        # These are the UK1 local networks that CORE-UK1 tells the rest of the mesh about.
+        # They’re advertised as “stubnets”, i.e. LANs hanging off this OSPF node/router.
+        stubnet 10.188.30.0/24;  # Main UK1 LAN (CORE-UK1’s home / user network in the UK site)
+        stubnet 10.194.1.0/24;   # UK1 OpenVPN "Road Warrior" Subnet
+        stubnet 10.194.2.0/24;   # UK1 OpenVPN "Road Warrior" Subnet
+        stubnet 10.34.10.0/24;   # UK1 Guest IOT VLAN Subnet - this is run on the edge router.
+        stubnet 10.44.10.0/24;   # UK1 CCTV "WAN Blocked" Subnet - this is run on the edge router.
+
+        # These are my WireGuard tunnels on CORE-UK1 that participate in OSPF.
+        # Each one is a point-to-point /30 link to another site in the mesh.
+        # Setting `type ptp`:
+        # - Matches the /30 point-to-point WG design
+        # - Avoids DR/BDR election (treats each WG interface as a simple p2p OSPF link)
+
+        interface "a1" { type ptp; };  # WG tunnel "a1" from CORE-UK1 to another site (e.g. HK1/USA),
+                                       # used as one of the mesh paths for OSPF adjacencies and traffic.
+
+        interface "s1" { type ptp; };  # WG tunnel "s1" (UK1 <-> another core, e.g. HK1),
+                                       # carrying OSPF hellos and routes for my backbone.
+
+        interface "s2" { type ptp; };  # WG tunnel "s2" — another dedicated /30 link in the mesh
+                                       # giving redundancy / alternate path for OSPF and data.
+
+        interface "s3" { type ptp; };  # WG tunnel "s3" — additional path in the full mesh
+                                       # (e.g. UK1 <-> HK2 or UK1 <-> USA depending on my link plan).
+    };
+}
+
+# FOR A CLEANER VERSION WITH LESS COMMENTS SEE etc-bird-bird.conf.example
