@@ -124,7 +124,7 @@ you can just do a summary route!
 
 ```bash
 # on all the routers...
-# Forward all WireGuard transit subnets to CORE-UK1
+# Forward all WireGuard transit subnets to CORE-X
 ip route replace 10.255.0.0/16 via 10.188.X.10
 ```
 
