@@ -21,7 +21,7 @@ I wanted secured and shared access to:
 
 The progression looked like:
 
-1. **Basic OpenVPN L3 tunnel**  
+1. **Basic OpenVPN L3 tunnel between two sites**  
 2. **SoftEther L2 bridging**
    Initially a daisy chain between three sites,
    but a commercial VPS was added after as a more reliable central hub.
