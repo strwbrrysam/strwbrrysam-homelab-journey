@@ -54,17 +54,36 @@ This reduces blast radius, avoids shared secrets, and keeps key rotation clean.
 Although it seems that with wireguard I am unable to reuse keys for multiple tunnels anyway.
 Second tunnel will error out if brought online after another tunnel using the same key.
 
+
 ## 📡 My WireGuard IP Scheme
 
-All my WG interfaces use a /32 point-to-point pattern:
+All my WireGuard links use a simple, structured **/30 point-to-point** addressing model.
 
-10.255.0.Y/32
+Each site-pair gets its own `/24` block under `10.255.0.0/16`, and every individual tunnel inside that block is assigned the next available `/30` (in steps of 4). This keeps things predictable and easy to document.
 
-Reasons:
+I assign host addresses based on **alphabetical order** of the site names:
 
-- Easy to read
-- Predictable for routing
-- Never overlaps with my LAN or ZFS/storage networks
+- The alphabetically first site always gets the **lower** IP in the /30 (.1, .5, .9, …)
+- The alphabetically second site gets the **higher** IP (.2, .6, .10, …)
+
+Example layout:
+
+- HK1 ↔ UK1 (S links) → 10.255.1.0/24
+- UK1 ↔ USA (A links) → 10.255.2.0/24
+- HK1 ↔ USA (B links) → 10.255.3.0/24
+- HK1 ↔ HK2 (C links) → 10.255.4.0/24
+- HK2 ↔ UK1 (D links) → 10.255.5.0/24
+- HK2 ↔ USA (E links) → 10.255.6.0/24
+
+Inside each `/24`, the first tunnel uses `.0/30` (hosts .1 and .2),
+the second uses `.4/30`, the third `.8/30`, and so on:
+
+10.255.X.0/30   → tunnel #1 (.1 ↔ .2)
+10.255.X.4/30   → tunnel #2 (.5 ↔ .6)
+10.255.X.8/30   → tunnel #3 (.9 ↔ .10)
+
+This system gives every WireGuard link a dedicated, easily recognizable subnet and keeps the addressing consistent across the entire mesh.
+
 
 ## 🔀 How Routing Works in My Setup
 
