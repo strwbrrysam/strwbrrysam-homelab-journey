@@ -27,7 +27,8 @@ And I did — and it was fast. Surprisingly fast compared to Wi-Fi.
 But since I didn’t know switches existed yet, plugging the NAS directly into the PC meant:
 
 - NAS access worked  
-- Internet access stopped  
+- Internet access stopped
+- I couldn't figure out how to make internet traffic default to Wi-Fi while maintaining access to the NAS through the ethernet port. Hey, go easy on me, I wasn't a computer teen prodigy.
 
 I didn’t know how to solve this, so I accepted slow Wi-Fi storage for a while:
 
