@@ -1,3 +1,4 @@
+```mermaid
 flowchart LR
 
     subgraph HK1["HK1<br/>Public IP: 111.111.111.111"]
@@ -15,3 +16,4 @@ flowchart LR
 
     UK1 <--> |"A1<br/>10.255.2.1 ↔ 10.255.2.2"| USA
     HK1 <--> |"B1<br/>10.255.3.1 ↔ 10.255.3.2"| USA
+```
