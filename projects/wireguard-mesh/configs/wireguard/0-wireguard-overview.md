@@ -56,9 +56,9 @@ Second tunnel will error out if brought online after another tunnel using the sa
 
 ## 📡 My WireGuard IP Scheme
 
-All my WG interfaces use a /30 point-to-point pattern:
+All my WG interfaces use a /32 point-to-point pattern:
 
-10.255.X.Y/30
+10.255.0.Y/32
 
 Reasons:
 
