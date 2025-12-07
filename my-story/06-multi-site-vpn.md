@@ -7,7 +7,7 @@ It was mainly for secure access to CCTV NVR systems because they don't usually h
 That and I'm a bit paranoid of sending video streams through to Annke/Hikvision servers.
 I created VLANs that blocked WAN access for the NVR and other IOT devices.
 
-But I didn't want to have to keep connect each and every device to a particular site's VPN server in order to access services.
+But I didn't want to have to keep connecting each and every device to a particular site's VPN server in order to access services.
 So I looked into how to create site-to-site VPNs to make them behave like  
 one unified private network.
 
