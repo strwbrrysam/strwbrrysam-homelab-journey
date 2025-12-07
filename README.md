@@ -65,7 +65,7 @@ Polished, beginner-friendly guides may eventually become separate public reposit
 
 This repository has two main parts:
 
-### **1. `/docs/` — My Personal Learning Journey**
+### **1. `/my-story/` — My Personal Learning Journey**
 A chronological story that explains:
 
 - how I got into Linux, networking, and infrastructure  
