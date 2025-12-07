@@ -1,0 +1,41 @@
+# ============================
+#   S1 WireGuard Tunnel (UK1)
+#   UK1 ↔ HK1
+#   Subnet: 10.255.1.0/30
+# ============================
+
+[Interface]
+# UK1 uses the higher IP (.2)
+Address = 10.255.1.2/30
+
+# Dedicated port for S1 on UK1
+ListenPort = 28914
+
+# ------------------------------------------------------------------
+# THIS IS UK1'S OWN PRIVATE KEY.
+# - Generate a fresh keypair for UK1.
+# - Paste ONLY the private key here.
+# - NEVER share your private key or commit it to GitHub.
+# ------------------------------------------------------------------
+PrivateKey = <UK1_S1_PRIVATE_KEY>
+
+# Prevent WG from injecting routes; dynamic routing is handled by BIRD.
+Table = off
+
+
+# ----------------------------------------------------------
+# PEER CONFIGURATION — THIS SECTION DESCRIBES HK1
+# ----------------------------------------------------------
+[Peer]
+# This is HK1's PUBLIC key.
+# Paste the public half of HK1's keypair here.
+PublicKey = <HK1_S1_PUBLIC_KEY>
+
+# All traffic enters WG; BIRD will choose the correct path internally
+AllowedIPs = 0.0.0.0/0
+
+# HK1's endpoint
+Endpoint = hk1.claycat.cc:28914
+
+# Helps maintain tunnel state through NAT/firewalls
+PersistentKeepalive = 25
