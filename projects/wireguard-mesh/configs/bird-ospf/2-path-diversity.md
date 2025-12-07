@@ -91,3 +91,5 @@ This design gives me:
 - Resilience against global transit instability  
 
 And it does all of that using nothing more than WireGuard + BIRD + thoughtful topology design.
+
+Also see 3-multipath-hashing.md where I talk about an extra setting needed to properly enable multipath to take advantage of all WG links.
