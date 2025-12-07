@@ -1,4 +1,5 @@
 # CORE-UK1 — BIRD OSPF config (what this actually does for my mesh)
+# FOR A CLEANER VERSION WITH LESS COMMENTS SEE clean-bird.conf.example
 
 log syslog all;          # Send ALL BIRD logs to syslog on CORE-UK1
                          # so I can see OSPF/WireGuard routing events with `journalctl` or syslog tools.
@@ -67,3 +68,5 @@ protocol ospf v2 {
                                        # (e.g. UK1 <-> HK2 or UK1 <-> USA depending on my link plan).
     };
 }
+
+# FOR A CLEANER VERSION WITH LESS COMMENTS SEE clean-bird.conf.example
