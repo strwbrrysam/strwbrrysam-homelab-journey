@@ -1,72 +1,74 @@
-# BIRD / birdc Commands – Homelab OSPF Mesh
+# BIRD / birdc Commands – My OSPF Mesh
 
-These commands are tuned for your topology:  
-HK1 ↔ HK2 ↔ UK1 ↔ USA (full mesh via multiple /30 WG links).
+These are the commands I actually use to debug the HK1 ↔ HK2 ↔ UK1 ↔ USA OSPF mesh over WireGuard.
 
 ---
 
 ## Core OSPF Health Checks
 
-- Show ALL neighbors across all tunnels:
+- Show all neighbors so I can instantly see which link is broken:
   - `show ospf neighbors`
-- Show adjacency states across every S/A/B/C/D link:
+
+- Sort neighbors so I can visually see state differences:
   - `show ospf neighbors | sort`
-- Show neighbors on a specific instance (if you split HK1 internal vs mesh):
+
+- If I’m using multiple OSPF instances, check the mesh-specific one:
   - `show ospf neighbors ospf_mesh`
 
 ---
 
-## Interface-Level OSPF Checks (Useful for tunnel-by-tunnel issues)
+## Interface-Level OSPF Checks
 
-- Show which tunnels are part of OSPF:
+- Show all WG tunnels participating in OSPF:
   - `show ospf interface`
-- Show detailed interface metrics, cost, MTU mismatches, dead timers:
+
+- Check timers, cost, MTU mismatches, or a link stuck in `ExStart`:
   - `show ospf interface S1`
 
 ---
 
-## Routing Table Checks (Specifically for your 10.188.x.x LANs)
+## Routing Tables (For My 10.188.x.x LANs)
 
-- Show all learned routes from OSPF:
+- Show all OSPF-learned routes:
   - `show route where proto = "ospf_mesh"`
-- Show a specific prefix (e.g., HK1 LAN):
+
+- Inspect a specific LAN prefix:
   - `show route 10.188.10.0/24`
-- Show detailed reason + next-hop + originating router:
+
+- Get full explanation (origin router, next-hop, LSAs):
   - `show route all for 10.188.10.0/24`
 
 ---
 
-## Troubleshooting Split-Brain or Partial Mesh Problems
+## Debugging Partial Mesh Issues
 
-- Check whether UK1 is learning all HK1 and USA prefixes:
+- Check if a site is learning HK1 + USA prefixes:
   - `show route where net ~ [10.188.10.0/24, 10.188.30.0/24]`
-- Check if a route is coming from the wrong tunnel (mis-weighted ECMP):
+
+- Check if BIRD chose the wrong tunnel (ECMP mismatch):
   - `show route all for 10.188.30.1`
-- Check ECMP load-sharing between tunnels:
+
+- Confirm that ECMP is being applied correctly between links:
   - `show route 10.188.30.0/24`
 
 ---
 
-## Configuration Reloading (When you tweak OSPF interface cost or timers)
+## Reloading BIRD Safely
 
-- Soft reload (preserves adjacencies):
+- Apply config without dropping sessions:
   - `configure soft`
-- Hard reload (if OSPF is stuck in `ExStart`/`Init` due to MTU mismatch):
+
+- Hard reload when I suspect MTU issues or adjacency stuck too long:
   - `configure`
 
 ---
 
-## Quick Command Chain When A Single Site Loses A LAN Prefix
+## When a LAN Prefix Disappears
 
-Use this exact triage workflow:
+This is the workflow I use every time:
 
-1. Check if BIRD sees the prefix:
-   - `show route 10.188.X.0/24`
-2. Check if the origin router is advertising it:
-   - `show ospf neighbors`
-3. Check if a tunnel is down:
-   - `sudo wg show`
-4. Look for OSPF dead timer expiry:
-   - `show ospf interface`
-5. Restart only the problematic tunnel:
-   - `sudo wg-quick down A2 && sudo wg-quick up A2`
+1. `show route 10.188.X.0/24`  
+2. If it’s missing → `show ospf neighbors`  
+3. If a neighbor is missing → `sudo wg show`  
+4. If the WG link is stale → restart that specific tunnel  
+5. Re-check route and adjacency  
