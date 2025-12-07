@@ -1,0 +1,38 @@
+log syslog all;
+
+router id 10.188.30.10;
+
+protocol device { }
+
+protocol kernel {
+    ipv4 {
+        export all;
+    };
+    persist;
+}
+
+protocol static {
+    ipv4;
+}
+
+protocol ospf v2 {
+    ipv4 {
+        export filter {
+            if source = RTS_OSPF then accept;
+            reject;
+        };
+    };
+
+    area 0.0.0.0 {
+        stubnet 10.188.30.0/24;
+        stubnet 10.194.1.0/24;
+        stubnet 10.194.2.0/24;
+        stubnet 10.34.10.0/24;
+        stubnet 10.44.10.0/24;
+
+        interface "a1" { type ptp; };
+        interface "s1" { type ptp; };
+        interface "s2" { type ptp; };
+        interface "s3" { type ptp; };
+    };
+}
