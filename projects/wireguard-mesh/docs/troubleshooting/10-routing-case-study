@@ -1,0 +1,179 @@
+# 🧩 Summary of the Routing Issue, My Mistake, and the Troubleshooting Process
+
+## 1. What the Original Problem Looked Like
+The CORE servers at UK1 and HK1 could not ping each other’s *edge routers*:
+- CORE-UK1 (10.188.30.10) → could not ping HK1 router (10.188.10.1)
+- CORE-HK1 (10.188.10.10) → could not ping UK1 router (10.188.30.1)
+
+But **LAN devices** at both sites *could* ping the remote router.  
+WireGuard mesh connectivity between COREs was fine.
+
+This proved the problem was not WireGuard, not firewall, not BIRD — it was **pure routing**.
+
+---
+
+## 2. My Line of Thinking — Step by Step
+I approached this by examining the *path* each packet took:
+
+### (a) Start from CORE-UK1 → HK1 router
+Commands used:
+
+    ping 10.188.10.1
+    traceroute 10.188.10.1
+    ip route get 10.188.10.1
+
+Traceroute showed the packet going into the **WireGuard mesh**:
+    first hop = 10.255.1.x (HK1 CORE WG interface)
+
+Then I checked the source IP:
+
+    ip route get 10.188.10.1
+    # Returned:
+    # 10.188.10.1 via 10.255.1.x dev sN src 10.255.1.6
+
+This revealed something important:
+- The CORE was *not* using 10.188.30.10 as source.
+- It was using **10.255.1.6** (a WG tunnel address).
+
+So I knew:  
+“OK, packets entering HK1 router come FROM 10.255.x.x — not from a LAN address.”
+
+That distinction becomes crucial later.
+
+---
+
+## 3. Validate What CORE-HK1 Sees
+On CORE-HK1 I ran:
+
+    tcpdump -ni any icmp
+
+I saw:
+
+    IP 10.255.1.6 > 10.188.10.1: ICMP echo request
+
+This proved:
+- The packet reached HK1 CORE.
+- HK1 CORE forwarded it to HK1 router.
+- HK1 router received the echo-request.
+
+But we never saw the **echo-reply** come back through the mesh.
+
+---
+
+## 4. Investigate HK1 Router → Where Does It Send the Reply?
+On HK1 router I checked its routing decisions:
+
+    ip route get 10.188.30.10
+    # correctly returned:
+    # 10.188.30.10 via 10.188.10.10 dev br0
+
+So far so good.  
+But the BIG DISCOVERY came from this:
+
+    ip route get 10.255.1.6
+
+It returned:
+
+    10.255.1.6 via 111.111.111.111 dev vlan2   # <-- router WAN
+
+This instantly explained everything.
+
+---
+
+## 5. The Actual Mistake
+I thought I installed this route:
+
+    ip route replace 10.255.0.0/24 via 10.188.10.10 dev br0
+
+But the WireGuard IPs are:
+
+- 10.255.1.x
+- 10.255.2.x
+- (various /30s across 10.255.1.0/24 and 10.255.2.0/24)
+
+Meaning:
+
+**10.255.0.0/24 only covers 10.255.0.0 – 10.255.0.255**
+
+It does **not** include any WireGuard endpoints whose third octet is non-zero, such as:
+
+- 10.255.1.6
+- 10.255.2.2
+- 10.255.3.5
+- 10.255.4.1
+- (basically *all* of my actual WG /30s)
+
+As a result, none of the real tunnel IPs matched the incorrectly summarised
+10.255.0.0/24 prefix. Because there was no matching static route, the router fell
+back to its default route and sent those packets out the WAN interface instead of
+toward the CORE server.
+
+So the router had **no matching static route** for 10.255.1.6.
+
+When there is no match, Linux routing does this:
+1. Tries longest-prefix-match.  
+2. Finds nothing for 10.255.1.0/24 because I never created it.  
+3. Falls back to **default route (WAN)**.
+
+Thus:
+
+    ip route get 10.255.1.6
+    -> via 14.199.32.1 dev vlan2
+
+This is why:
+- HK1 Router → WG address FAILED  
+- HK1 Router never sent replies into the mesh  
+- CORE-UK1 never received replies  
+- LAN devices worked (they never hit 10.255.x.x)  
+- COREs failed (all their mesh traffic uses 10.255.x.x internally)
+
+My bounding route was simply wrong.
+
+---
+
+## 6. The Correct Fix
+Replace the incorrect /24 with a correct summary covering ALL WG transit links:
+
+    ip route replace 10.255.0.0/16 via 10.188.10.10 dev br0   # HK1 router
+    ip route replace 10.255.0.0/16 via 10.188.30.10 dev br0   # UK1 router
+
+Then validated with:
+
+    ip route get 10.255.1.6
+    # should now show via br0 → 10.188.x.10
+
+And immediately the CORE → router pings began working properly.
+
+---
+
+## 7. Key Lessons Learned
+
+### ✓ Inspect both SOURCE and DESTINATION IPs during routing tests
+This single command cracked the case open:
+
+    ip route get <destination>
+
+It reveals:
+- which interface the packet will leave on
+- which gateway will be used
+- which **source IP** will be used  
+- whether the route matches what you think exists
+
+### ✓ tcpdump shows where packets STOP
+CORE-HK1 saw request → router responded → but reply never came back.  
+This told me the breakage was between **router → core**, not **core → router**.
+
+### ✓ A wrong subnet mask silently breaks everything
+A single wrong /24 was enough to:
+- misroute all WG replies
+- cause router traffic to fall back to WAN
+- create full asymmetry
+- break only the COREs, not the LAN
+
+### ✓ LAN working does NOT mean routing is correct
+LAN devices only use LAN→router paths, not WG paths.
+
+---
+
+## 8. Final Summary in One Line
+The entire problem was caused by summarizing my WireGuard transit network incorrectly as **10.255.0.0/24** instead of a range that actually includes **10.255.1.x** and **10.255.2.x**, causing the routers to send all 10.255.x.x traffic out the WAN instead of toward the CORE servers.
