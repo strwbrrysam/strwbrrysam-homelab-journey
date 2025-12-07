@@ -70,7 +70,7 @@ Once the architectural overview is clear, move to:
 ## 🔗 Related Sections
 
 ### 📘 High-Level Motivation  
-`/projects/wireguard-mesh/docs/README.md`  
+`/projects/wireguard-mesh/README.md`  
 Explains why the migration from SoftEther L2 to WireGuard L3 was done.
 
 ### ⚙️ Configuration Documentation  
