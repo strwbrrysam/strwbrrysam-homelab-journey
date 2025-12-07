@@ -32,7 +32,7 @@ ip route replace 10.255.6.0/30 via 10.188.X.10
 but in this case it can also be summarized to:
 
 ```bash
-ip route replace 10.255.0.0/24 via 10.188.X.10
+ip route replace 10.255.0.0/16 via 10.188.X.10
 ```
 
 Where:
