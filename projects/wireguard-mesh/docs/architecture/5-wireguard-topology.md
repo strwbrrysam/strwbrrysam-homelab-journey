@@ -117,4 +117,4 @@ Per-link details such as:
 …are documented in:
 
 ```text
-/projects/wireguard-mesh/docs/configs/wireguard/README.md
+/projects/wireguard-mesh/docs/configs/wireguard/
