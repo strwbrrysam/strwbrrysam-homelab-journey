@@ -1,46 +1,46 @@
-# Routing Debug Cheatsheet – Focused on WireGuard + BIRD OSPF
+# Routing Debug Cheatsheet – How I Diagnose WG + BIRD OSPF Failures
 
-Strictly tailored to your homelab’s routing problems, especially:
-- “Prefix missing on one site”
-- “OSPF neighbor stuck”
-- “Traffic only flows one direction”
-- “WG tunnel up but routes missing”
+This is MY actual flow when a prefix vanishes, a tunnel flaps, or OSPF looks suspicious.
 
 ---
 
-## Step 1 — Verify WG Tunnel Health
+## Step 1 — Check the WireGuard Tunnel
 
-- Show all handshakes (to spot one dead link):
+- Look at handshakes to instantly spot a dead peer:
   - `sudo wg show | grep handshake`
-- Check that a /30 is assigned:
+
+- Confirm a /30 is actually assigned:
   - `ip addr show dev S1`
-- Check tunnel MTU (OSPF breaks if mismatched):
+
+- Verify MTU (I’ve seen OSPF break purely because of MTU mismatches):
   - `ip link show S1 | grep mtu`
 
 ---
 
-## Step 2 — Confirm OSPF Neighbor State
+## Step 2 — Check OSPF Neighbor State
 
 - `sudo birdc "show ospf neighbors"`
-- Look for:
-  - `Full` (good)
-  - `Init` or `2-Way` (not forming adjacency)
-  - `ExStart` (MTU mismatch)
-  - `Loading` for too long (sync stuck)
+
+I specifically look for:
+
+- `Full` → good  
+- `Init` → tunnel up but adjacency down  
+- `ExStart` → MTU mismatch  
+- `Loading` for too long → OSPF stuck syncing
 
 ---
 
-## Step 3 — Check If A Prefix Is Being Learned
+## Step 3 — Check If the Prefix Exists in the Routing Table
 
 - `sudo birdc "show route 10.188.X.0/24"`
-- If missing → check neighbor on that LAN’s originating router:
-  - `sudo birdc "show ospf neighbors"`
+
+If BIRD doesn’t know the prefix, then the originating site isn’t advertising it or OSPF adjacency is broken.
 
 ---
 
-## Step 4 — Check That Policy Routing Isn’t Interfering
+## Step 4 — Confirm Policy Routing Isn’t Interfering
 
-(Used rarely in your current design but useful for debugging if you add ECMP)
+I rarely use policy routing in this setup, but when debugging ECMP or asymmetric paths:
 
 - `ip rule show`
 - `ip route show table main | grep 10.188`
@@ -49,31 +49,24 @@ Strictly tailored to your homelab’s routing problems, especially:
 
 ## Step 5 — Inspect Traffic Directly
 
-- Capture on the tunnel:
-  - `sudo tcpdump -ni S1`
-- Look for:
-  - OSPF Hello packets  
-  - Missing responses  
-  - Asymmetric traffic (OSPF only one direction)
+When things make zero sense:
+
+- `sudo tcpdump -ni S1`
+
+I check whether:
+
+- OSPF Hello packets are coming in  
+- Replies are missing  
+- Traffic is only flowing one way  
 
 ---
 
-## Step 6 — Restart Only What’s Broken
+## Step 6 — Restart ONLY the Broken Component
 
 - Restart a tunnel:
   - `sudo wg-quick down S1 && sudo wg-quick up S1`
-- Reload BIRD (soft first):
+
+- Reload BIRD softly:
   - `sudo birdc "configure soft"`
 
 ---
-
-## Quick Reference – Common Root Causes You've Encountered
-
-- WRONG subnet mask (/24 mistaken for /30)
-- MTU mismatch between WG endpoints  
-- Dead remote peer (handshake expired)  
-- Incorrect AllowedIPs blocking OSPF traffic  
-- Wrong next-hop due to stale OSPF LSA  
-- BIRD instance not reloaded after config change  
-
-This is your “fast triage” for the most common failures.
