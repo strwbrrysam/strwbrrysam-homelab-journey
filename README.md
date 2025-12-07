@@ -13,7 +13,7 @@ If you're exploring, start with the overview below.
 ## 📘 Start Here — Overview of the Journey
 To understand the full story, begin with the high-level summary:
 
-➡️ **[00 – Overview](docs/00-overview.md)**
+➡️ **[00 – Overview](my-story/00-overview.md)**
 
 ---
 
@@ -21,16 +21,16 @@ To understand the full story, begin with the high-level summary:
 
 Each chapter covers a different phase of my development:
 
-- **[01 – Early Years: My First PC & Synology](docs/01-early-years.md)**
-- **[02 – Discovering Networking & Storage](docs/02-discovering-networking.md)**
-- **[03 – Game Server Era: My Gateway to Linux](docs/03-game-server-era.md)**
-- **[04 – Router Firmware & Home Networking](docs/04-router-firmware.md)**
-- **[05 – Cabling, CCTV, and Physical Infrastructure](docs/05-cabling-and-cctv.md)**
-- **[06 – Multi-Site VPNs](docs/06-multi-site-vpn.md)**
-- **[07 – Dynamic Routing with BIRD & OSPF](docs/07-dynamic-routing.md)**
-- **[08 – Self-Hosting Services (Nextcloud, LAMP/LEMP)](docs/08-self-hosting.md)**
-- **[09 – Learning to Vibe Code & Use AI](docs/09-ai-and-vibecoding.md)**
-- **[10 – What’s Next](docs/10-whats-next.md)**
+- **[01 – Early Years: My First PC & Synology](my-story/01-early-years.md)**
+- **[02 – Discovering Networking & Storage](my-story/02-discovering-networking.md)**
+- **[03 – Game Server Era: My Gateway to Linux](my-story/03-game-server-era.md)**
+- **[04 – Router Firmware & Home Networking](my-story/04-router-firmware.md)**
+- **[05 – Cabling, CCTV, and Physical Infrastructure](my-story/05-cabling-and-cctv.md)**
+- **[06 – Multi-Site VPNs](my-story/06-multi-site-vpn.md)**
+- **[07 – Dynamic Routing with BIRD & OSPF](my-story/07-dynamic-routing.md)**
+- **[08 – Self-Hosting Services (Nextcloud, LAMP/LEMP)](my-story/08-self-hosting.md)**
+- **[09 – Learning to Vibe Code & Use AI](my-story/09-ai-and-vibecoding.md)**
+- **[10 – What’s Next](my-story/10-whats-next.md)**
 
 ---
 
