@@ -1,0 +1,79 @@
+[global]
+    # Windows workgroup name
+    workgroup = WORKGROUP
+
+    # How the server identifies itself over SMB
+    server string = vault
+
+    # Authentication mode ("user" is standard for SMB shares)
+    security = user
+
+    # Failed auth attempts map to guest user instead of denying outright
+    map to guest = bad user
+
+
+    # Socket tuning to improve throughput and latency
+    socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=65536 SO_SNDBUF=65536
+
+    # Allow raw SMB operations (improves speed slightly)
+    read raw = yes
+    write raw = yes
+
+    # Max packet size for SMB transfers
+    max xmit = 65535
+
+    # Disconnect idle clients after X minutes
+    dead time = 15
+
+    # Cache working directory lookups for performance
+    getwd cache = yes
+
+
+    # Enable extended ACL support via filesystem xattrs
+    vfs objects = acl_xattr
+
+    # Make ACL inheritance behave like Windows
+    map acl inherit = yes
+
+    # Store Windows DOS attributes (hidden, readonly, etc.) in xattrs
+    store dos attributes = yes
+
+
+
+[vault]
+    # Filesystem path of the share
+    path = /zpool/vault
+
+    # Shown in Windows Explorer
+    comment = vault
+
+    # Make the share visible when browsing
+    browseable = yes
+
+    # Allow read/write access (permissions still enforced)
+    read only = no
+
+    # Do not allow guest access
+    guest ok = no
+
+
+    # Default permissions for new files
+    create mask = 0660
+
+    # Default permissions for new directories
+    directory mask = 0770
+
+
+    # Enable ACL support within the share + enable recycle bin functionality
+    vfs objects = acl_xattr recycle
+
+
+    # Recycle bin configuration
+    recycle:repository = .recycle        # Where deleted files go
+    recycle:exclude_dir = .recycle       # Do not recycle the recycle folder
+    recycle:keeptree = yes               # Preserve directory structure
+    recycle:versions = yes               # Append version numbers if files conflict
+    recycle:directory_mode = 0770        # Permissions for recycled directories
+    recycle:subdir_mode = 0770           # Permissions for subdirectories
+    recycle:touch = no                   # Do not update timestamps when recycled
+    recycle:touch_mtime = n              # Do not modify mtime either
