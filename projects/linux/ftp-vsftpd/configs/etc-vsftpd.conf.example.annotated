@@ -1,0 +1,69 @@
+# /etc/vsftpd.conf
+# Simple, VPN-only vsftpd setup that integrates with /zpool/vault ACLs
+
+############################################################
+# Listener Settings
+############################################################
+listen=YES                  # Standalone mode, listen on port 21
+listen_ipv6=NO              # Disable IPv6 listener (not needed for VPN use)
+
+############################################################
+# Basic Login + Access Control
+############################################################
+anonymous_enable=NO         # No anonymous FTP access
+local_enable=YES            # Allow PAM-authenticated system users
+write_enable=YES            # Enable file uploads, deletes, renames
+use_localtime=YES           # Log timestamps using system local time
+
+############################################################
+# Root Directory + Chroot Enforcement
+############################################################
+local_root=/zpool/vault     # Users land directly in the ZFS-backed dataset
+chroot_local_user=YES       # Jail users inside the root directory
+allow_writeable_chroot=YES  # Required when the chroot directory is writable
+
+############################################################
+# File Creation Behaviour (ACLs handle real access)
+############################################################
+local_umask=002             # Default umask for uploaded files
+file_open_mode=0666         # Default file permissions before umask
+chmod_enable=YES            # Allow CHMOD commands (ACLs still control access)
+
+secure_chroot_dir=/var/run/vsftpd/empty   # Required secure dir for vsftpd
+
+############################################################
+# Passive Mode (Required for Most Clients)
+############################################################
+pasv_enable=YES             # Enable passive mode
+pasv_min_port=30000         # Define passive port range
+pasv_max_port=31000
+port_enable=YES             # Enable active mode as fallback
+
+############################################################
+# Logging
+############################################################
+xferlog_enable=YES          # Enable transfer logs
+dual_log_enable=YES         # Log both vsftpd and xferlog formats
+vsftpd_log_file=/var/log/vsftpd.log
+
+############################################################
+# Authentication
+############################################################
+pam_service_name=vsftpd     # Use PAM stack: /etc/pam.d/vsftpd
+
+############################################################
+# Security (FTPS disabled — VPN handles encryption)
+############################################################
+ssl_enable=NO               # Fully disable FTPS/TLS for simplicity
+
+############################################################
+# Session Stability
+############################################################
+idle_session_timeout=600    # Disconnect idle users after 10 minutes
+data_connection_timeout=600 # Timeout for slow or stalled uploads
+
+############################################################
+# Troubleshooting (Optional, Uncomment as Needed)
+############################################################
+#async_abor_enable=YES      # Improves compatibility with some FTPS clients
+#use_sendfile=NO            # Fixes rare hangs/crashes with certain storage setups
